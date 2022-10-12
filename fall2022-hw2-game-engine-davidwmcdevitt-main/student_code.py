@@ -122,12 +122,226 @@ def is_terminal_node(board):
 	return winning_move(board, PLAYER_PIECE) or winning_move(board, AI_PIECE) or len(get_valid_locations(board)) == 0
 
 def minimax(board, depth, maximizingPlayer):
-	#Student code goes here
-	pass
+    
+    global minimax_score
+     
+    if maximizingPlayer == True:
+        if depth > 0:  
+            options = get_valid_locations(board)
+            check = is_terminal_node(board)
+            
+            player_win = winning_move(board,1)
+            if player_win is None:
+                player_win = False
+            
+            ai_win = winning_move(board,2)
+            if ai_win is None:
+                ai_win = False
+            
+            if check == True and player_win == True:
+                col = None
+                minimax_score = -10000
+                return col, minimax_score
+            if check == True and ai_win == True:
+                col = None
+                minimax_score = 10000
+                return col, minimax_score
+            if check == True and ai_win == False and player_win == False:
+                col = None
+                minimax_score = 0
+                return col, minimax_score
+                
+            minimax_score = -10000
+            col = pick_best_move(board,2)
+            
+            for i in options:
+                row = get_next_open_row(board,i)
+                temp = board.copy()
+                drop_piece(temp,row,i,2)
+                maximizingPlayer = False
+                score = minimax(temp,depth-1,maximizingPlayer)
+                score = score[1]
+                
+                
+                if score >minimax_score:
+                    col = i
+                    minimax_score = score
+                    
+            return col, minimax_score
+                
+            
+        if depth == 0:
+            col = None
+            minimax_score = score_position(board,2)
+            return col, minimax_score
+        
+    
+    if maximizingPlayer == False:
+        if depth > 0:  
+            options = get_valid_locations(board)
+            check = is_terminal_node(board)
+            
+            player_win = winning_move(board,1)
+            if player_win is None:
+                player_win = False
+            
+            ai_win = winning_move(board,2)
+            if ai_win is None:
+                ai_win = False
+            
+            if check == True and player_win == True:
+                col = None
+                minimax_score = -10000
+                return col, minimax_score
+            if check == True and ai_win == True:
+                col = None
+                minimax_score = 10000
+                return col, minimax_score
+            if check == True and ai_win == False and player_win == False:
+                col = None
+                minimax_score = 0
+                return col, minimax_score
+                
+            minimax_score = 10000
+            col = pick_best_move(board,2)
+            
+            for i in options:
+                row = get_next_open_row(board,i)
+                temp = board.copy()
+                drop_piece(temp,row,i,1)
+                maximizingPlayer = True
+                score = minimax(temp,depth-1,maximizingPlayer)
+                score = score[1]
+                
+                
+                if score >minimax_score:
+                    col = i
+                    minimax_score = score
+                    
+            return col, minimax_score
+                
+            
+        if depth == 0:
+            col = None
+            minimax_score = score_position(board,2)
+            return col, minimax_score
+            
 
 def minimaxAlphaBeta(board, depth, alpha, beta, maximizingPlayer):
-	#Student code goes here
-	pass
+	
+    global minimax_score
+     
+    if maximizingPlayer == True:
+        if depth > 0:  
+            options = get_valid_locations(board)
+            check = is_terminal_node(board)
+            
+            player_win = winning_move(board,1)
+            if player_win is None:
+                player_win = False
+            
+            ai_win = winning_move(board,2)
+            if ai_win is None:
+                ai_win = False
+            
+            if check == True and player_win == True:
+                col = None
+                minimax_score = -10000
+                return col, minimax_score
+            if check == True and ai_win == True:
+                col = None
+                minimax_score = 10000
+                return col, minimax_score
+            if check == True and ai_win == False and player_win == False:
+                col = None
+                minimax_score = 0
+                return col, minimax_score
+                
+            minimax_score = -10000
+            col = pick_best_move(board,2)
+            
+            for i in options:
+                row = get_next_open_row(board,i)
+                temp = board.copy()
+                drop_piece(temp,row,i,2)
+                maximizingPlayer = False
+                score = minimax(temp,depth-1,maximizingPlayer)
+                score = score[1]
+                
+                
+                if score >minimax_score:
+                    col = i
+                    minimax_score = score
+                    
+                if score > alpha:
+                    alpha = score
+                if alpha >= beta:
+                    break
+                    
+            return col, minimax_score
+                
+            
+        if depth == 0:
+            col = None
+            minimax_score = score_position(board,2)
+            return col, minimax_score
+        
+    
+    if maximizingPlayer == False:
+        if depth > 0:  
+            options = get_valid_locations(board)
+            check = is_terminal_node(board)
+            
+            player_win = winning_move(board,1)
+            if player_win is None:
+                player_win = False
+            
+            ai_win = winning_move(board,2)
+            if ai_win is None:
+                ai_win = False
+            
+            if check == True and player_win == True:
+                col = None
+                minimax_score = -10000
+                return col, minimax_score
+            if check == True and ai_win == True:
+                col = None
+                minimax_score = 10000
+                return col, minimax_score
+            if check == True and ai_win == False and player_win == False:
+                col = None
+                minimax_score = 0
+                return col, minimax_score
+                
+            minimax_score = 10000
+            col = pick_best_move(board,2)
+            
+            for i in options:
+                row = get_next_open_row(board,i)
+                temp = board.copy()
+                drop_piece(temp,row,i,1)
+                maximizingPlayer = True
+                score = minimax(temp,depth-1,maximizingPlayer)
+                score = score[1]
+                
+                
+                if score >minimax_score:
+                    col = i
+                    minimax_score = score
+                    
+                if score < beta:
+                    beta = score
+                if beta <= alpha:
+                    break
+                    
+            return col, minimax_score
+                
+            
+        if depth == 0:
+            col = None
+            minimax_score = score_position(board,2)
+            return col, minimax_score
+            
 
 def get_valid_locations(board):
 	valid_locations = []
@@ -234,8 +448,8 @@ while not game_over:
 		#col = pick_best_move(board, AI_PIECE)
 
 		# Switch your statements here
-		col, minimax_score = minimax(board, 5, True)
-		# col, minimax_score = minimaxAlphaBeta(board, 5, -math.inf, math.inf, True)
+		#col, minimax_score = minimax(board,5, True)
+		col, minimax_score = minimaxAlphaBeta(board, 5, -math.inf, math.inf, True)
 
 		if is_valid_location(board, col):
 			#pygame.time.wait(500)
