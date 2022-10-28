@@ -128,7 +128,8 @@ class KnowledgeBase(object):
         printv("Retracting {!r}", 0, verbose, [fact_rule])
         ####################################################
         
-        if read.parse_input(fact_rule).name == 'fact':
+        #if read.parse_input(fact_rule).name == 'fact':
+        if isinstance(fact_rule, Fact):
             """Represents a fact in our knowledge base. Has a statement containing the
                 content of the fact, e.g. (isa Sorceress Wizard) and fields tracking
                 which facts/rules in the KB it supports and is supported by.
@@ -143,32 +144,34 @@ class KnowledgeBase(object):
                 supports_facts (listof Fact): Facts that this fact supports
                 supports_rules (listof Rule): Rules that this fact supports
             """
-            name = read.parse_input(fact_rule).name
-            statement =read.parse_input(fact_rule).statement
-            asserted = read.parse_input(fact_rule).asserted
-            supported_by = read.parse_input(fact_rule).supported_by
-            supports_facts = read.parse_input(fact_rule).supports_facts
-            supports_rules = read.parse_input(fact_rule).supports_rules
+            #name = read.parse_input(fact_rule).name
+            #statement =read.parse_input(fact_rule).statement
+            #asserted = read.parse_input(fact_rule).asserted
+            #supported_by = read.parse_input(fact_rule).supported_by
+            #supports_facts = read.parse_input(fact_rule).supports_facts
+            #supports_rules = read.parse_input(fact_rule).supports_rules
             
-                   
             for i in self.facts:
-                if i.statement == statement:
+                if i.statement == fact_rule.statement:
                     self.facts.remove(i)
             
-            if len(supports_facts) > 0 :
+            if len(fact_rule.supports_facts) > 0 :
                 for i in self.facts:
-                    if i in supports_facts:
-                        i.supported_by.remove(fact_rule)
+                    if i in fact_rule.supports_facts:
+                        #self.facts.remove(i)
+                        #i.supported_by.remove(fact_rule)
                         if len(i.supported_by) ==0 and i.asserted == False:
                             self.kb_retract(i)
-            if len(supports_rules > 0):
+            if len(fact_rule.supports_rules) > 0:
                 for i in self.rules:
-                    if i in supports_rules:
-                        i.supported_by.remove(fact_rule)
+                    if i in fact_rule.supports_rules:
+                        #self.facts.remove(i)
+                        #i.supported_by.remove(fact_rule)
                         if len(i.supported_by) ==0 and i.asserted == False:
                             self.kb_retract(i)
                 
-        elif read.parse_input(fact_rule).name == 'rule':
+        #elif read.parse_input(fact_rule).name == 'rule':
+        if isinstance(fact_rule, Rule):
             
             """Represents a rule in our knowledge base. Has a list of statements (the LHS)
                 containing the statements that need to be in our KB for us to infer the
@@ -186,29 +189,30 @@ class KnowledgeBase(object):
                 supports_facts (listof Fact): Facts that this rule supports
                 supports_rules (listof Rule): Rules that this rule supports
             """
-            name = parse_input(fact_rule).name
-            lhs = parse_input(fact_rule).lhs
-            rhs = parse_input(fact_rule).rhs
-            statement =parse_input(fact_rule).statement
-            asserted = parse_input(fact_rule).asserted
-            supported_by = parse_input(fact_rule).supported_by
-            supports_facts = parse_input(fact_rule).supports_facts
-            supports_rules = parse_input(fact_rule).supports_rules
+            #name = parse_input(fact_rule).name
+            #lhs = parse_input(fact_rule).lhs
+            #rhs = parse_input(fact_rule).rhs
+            #statement =parse_input(fact_rule).statement
+            #asserted = parse_input(fact_rule).asserted
+            #supported_by = parse_input(fact_rule).supported_by
+            #supports_facts = parse_input(fact_rule).supports_facts
+            #supports_rules = parse_input(fact_rule).supports_rules
             
             for i in self.rules:
-                if i.statement == statement:
+                if i.lhs == fact_rule.lhs:
                     self.rules.remove(i)
                     
-            if len(supports_facts) > 0 :
-                for i in self.facts:
-                    if i in supports_facts:
-                        i.supported_by.remove(fact_rule)
+            if len(fact_rule.supports_facts) > 0 :
+                for i in self.rules:
+                    if i in rule.supports_facts:
+                        #self.rules.remove(i)
+                        #i.supported_by.remove(fact_rule)
                         if len(i.supported_by) ==0 and i.asserted == False:
                             self.kb_retract(i)
-            if len(supports_rules > 0):
+            if len(fact_rule.supports_rules) > 0:
                 for i in self.rules:
-                    if i in supports_rules:
-                        i.supported_by.remove(fact_rule)
+                    if i in rule.supports_rules:
+                        #i.supported_by.remove(fact_rule)
                         if len(i.supported_by) ==0 and i.asserted == False:
                             self.kb_retract(i)
         else:
@@ -234,9 +238,28 @@ class InferenceEngine(object):
         if bindings == False:
             return None
         else:
-            new= Fact(instantiate(rule.rhs,bindings))
-            rule.supports_facts.append(new)
-            fact.supports_facts.append(new)
-            kb.kb_add(new)
+            rule_count = len(rule.lhs)
+            if rule_count ==1 :
+                new= Fact(instantiate(rule.rhs, bindings), [[rule, fact]])
+                rule.supports_facts.append(new)
+                fact.supports_facts.append(new)
+                kb.kb_add(new)
+            if rule_count > 1:
+                temp_lhs = []
+                temp_rule = []
                 
+                for i in range(1,rule_count):
+                    temp_lhs.append(instantiate(rule.lhs[i], bindings))
+                
+                temp_rule.append(temp_lhs)
+                temp_rule.append(instantiate(rule.rhs, bindings))
+                    
+
+                new = Rule(temp_rule,[[rule, fact]])
+                
+                rule.supports_rules.append(new)
+                fact.supports_rules.append(new)
+                kb.kb_add(new)
+            else:
+                return None
             
