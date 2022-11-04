@@ -1,0 +1,27 @@
+{
+  "defaultDomain": "domain.pddl",
+  "defaultOptions": "",
+  "cases": [
+    {
+      "problem": "problem1.pddl"
+    },
+    {
+      "problem": "problem3.pddl"
+    },
+    {
+      "problem": "problem4.pddl"
+    },
+    {
+      "problem": "problem5_fail.pddl"
+    },
+    {
+      "problem": "problem6_fail.pddl"
+    },
+    {
+      "problem": "problem2.pddl"
+    },
+    {
+      "problem": "problem0.pddl"
+    }
+  ]
+}
